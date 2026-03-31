@@ -3,9 +3,38 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.springex_web.mapper.TodoMapper">
+
+    <sql id="search">
+        <where>
+            <if test="types != null and types.length > 0">
+                <foreach collection="types" item="type" open="(" close=") "
+                         separator=" OR ">
+                    <if test="type == 't'.toString()">
+                        title like concat('%', #{keyword}, '%')
+                    </if>
+                    <if test="type == 'w'.toString()">
+                        writer like concat('%', #{keyword}, '%')
+                    </if>
+                </foreach>
+            </if>
+            <if test="finished">
+                <trim prefix="and">
+                    finished = 1
+                </trim>
+            </if>
+
+            <if test="from != null and to != null">
+                <trim prefix="and">
+                    dueDate between #{from} and #{to}
+                </trim>
+            </if>
+        </where>
+    </sql>
     <select id="getTime" resultType="string">
         SELECT now()
     </select>
+
+
 
     <insert id="insert">
         insert into tbl_todo(title, dueDate, writer) values (#{title}, #{dueDate}, #{writer})
@@ -28,7 +57,10 @@
     </update>
 
     <select id="selectList" resultType="com.example.springex_web.domain.TodoVO">
-        select * from tbl_todo order by tno desc limit #{skip}, #{size}
+
+        select * from tbl_todo
+        <include refid="search"></include>
+        order by tno desc limit #{skip}, #{size}
     </select>
 
     <!--
@@ -43,8 +75,11 @@
             tno 개수를 세어서 반환
             예: 데이터가 500개 있으면 500 반환
         -->
-        select count(tno) from tbl_todo;
+        select count(tno) from tbl_todo
+        <include refid="search"></include>
 
     </select>
+
+
 
 </mapper>
