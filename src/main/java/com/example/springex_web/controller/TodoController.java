@@ -88,9 +88,10 @@ public class TodoController {
         log.info("-----------------remove-------------------");
         log.info("tno: " + tno);
         todoService.remove(tno);
-        redirectAttributes.addAttribute("page",1);
-        redirectAttributes.addAttribute("size",pageRequestDTO.getSize());
-        return "redirect:/todo/list";
+//        redirectAttributes.addAttribute("page",1);
+//        redirectAttributes.addAttribute("size",pageRequestDTO.getSize());
+//        return "redirect:/todo/list";
+            return "redirect:/todo/list?" + pageRequestDTO.getLink();
     }
     @PostMapping("/modify")
     public String modify(@Valid TodoDTO todoDTO,
@@ -104,10 +105,12 @@ public class TodoController {
             return "redirect:/todo/modify";
         }
         log.info(todoDTO);
-        redirectAttributes.addAttribute("page",pageRequestDTO.getPage());
-        redirectAttributes.addAttribute("size",pageRequestDTO.getSize());
+//        redirectAttributes.addAttribute("page",pageRequestDTO.getPage());
+//        redirectAttributes.addAttribute("size",pageRequestDTO.getSize());
         todoService.modify(todoDTO);
-        return "redirect:/todo/list";
+//        return "redirect:/todo/list";
+        redirectAttributes.addAttribute("tno",todoDTO.getTno());
+        return "redirect:/todo/read";
     }
 
 }
